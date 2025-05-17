@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta name="twitter:widgets:csp" content="on"> -->
+
+    <title>OTA user interaction data helper</title>
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/panel.css">
+</head>
+<body>
+<p class="status" title="Unable to contact content script. Try reloading the page.">(disconnected)</p>
+<nav>
+	<section class="task-description-section">
+		<textarea
+			class="task-description-input"
+			placeholder="Describe your task here…"
+			rows="1"></textarea>
+		<span class="task-description-start" style="display:none;">Current task: </span>
+		<span class="task-description-task-id" style="display:none;">...</span>
+		<span class="task-description-label" style="display:none;"></span>
+	</section>
+    <button class="button-primary record">Start Record</button>
+	<button class="record-pause" id="record-pause-button-1" disabled>Pause</button>
+    <button class="clear">Clear</button>
+	<button class="task-visibility-toggle"
+        id="task-visibility-toggle-button"
+        hidden>Hide Task</button>
+</nav>
+<main>
+    <table class="events u-full-width">
+        <thead>
+        <tr>
+            <th>
+                <div class="type-filters">
+                    <div class="checkbox nodes-added" title="nodes added">
+                        <input type="checkbox" id="nodes-added-filter" checked/>
+                        <label for="nodes-added-filter"></label>
+                    </div>
+                    <div class="checkbox nodes-removed" title="nodes removed">
+                        <input type="checkbox" id="nodes-removed-filter" checked/>
+                        <label for="nodes-removed-filter"></label>
+                    </div>
+                    <div class="checkbox attribute-changed" title="attribute changed">
+                        <input type="checkbox" id="attribute-changed-filter" checked/>
+                        <label for="attribute-changed-filter"></label>
+                    </div>
+                    <div class="checkbox text-changed" title="text changed">
+                        <input type="checkbox" id="text-changed-filter" checked/>
+                        <label for="text-changed-filter"></label>
+                    </div>
+                </div>
+                Event <span class="counter">(0)</span>
+            </th>
+            <th>
+                <input type="text" placeholder="filter" class="target-filter"/>
+                Target
+            </th>
+            <th>
+				Details
+			</th>
+			<th>
+				<button class="settings-btn">Settings</button>
+				<span id="settings-status" style="display:none; color:green;">Saved ✔</span>
+			</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</main>
+
+<!-- Settings panel (initially hidden) -->
+<section class="settings-panel hidden">
+	<h5>OTA Action Capturer - Settings</h5>
+  
+	<label>
+	  Host
+	  <input type="text" id="collector-host" placeholder="127.0.0.1">
+	</label>
+  
+	<label>
+	  Port
+	  <input type="number" id="collector-port" min="1" max="65535" placeholder="4934">
+	</label>
+	<label>
+		<input type="checkbox" id="collector-mask">
+		Hide sensitive data before sending
+	</label>
+  
+	<button id="settings-save"  class="button-primary">Save</button>
+	<button id="settings-cancel"               >Cancel</button>
+	<hr>
+  </section>
+  
+<aside class="intro">
+	<img src="ico/ota-logo-128.png"
+	alt="OTA logo"
+	style="display:block; margin:0 auto 12px auto; width:64px; height:64px; border-radius:12px;"/>
+    <p>Click <em>"Start Record"</em> to start recording your WAP workflow.</p>
+
+    <div class="social-buttons">
+        <iframe
+            src="http://ghbtns.com/github-btn.html?user=OTA-Tech-AI&amp;repo=OTA-WAP-browser-data-collector&amp;type=watch&amp;count=true&amp;size=small"
+            style="background-color: transparent; border: none; overflow:hidden" width="90" height="20"></iframe>
+    </div>
+</aside>
+
+<script src="js/ContentScriptProxy.js"></script>
+<script src="js/EventTable.js"></script>
+<script src="js/ScrollHelper.js"></script>
+<script src="js/panel.js"></script>
+
+<!-- <script src="https://platform.twitter.com/widgets.js"></script> -->
+</body>
+</html>

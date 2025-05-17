@@ -1,0 +1,36 @@
+{
+	"manifest_version": 3,
+	"name": "WAP Browser Action Capturer",
+	"version": "1.0",
+	"description": "A simple tool helping you to collect the interactions with browser for WAP replay.",
+	"icons": {
+		"128": "ico/ota-logo-128.png",
+		"48": "ico/ota-logo-48.png"
+	},
+	"permissions": [
+		"tabs",
+		"webNavigation",
+		"scripting",
+		"storage"
+	],
+	"host_permissions": [
+		"<all_urls>"
+	],
+	"background": {
+		"service_worker": "js/background.js"
+	},
+	"devtools_page": "devtools.html",
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": [
+				"js/elementProcess.js",
+				"lib/purify.min.js"
+			]
+		}
+	],
+	"content_security_policy": {
+		"extension_pages": "script-src 'self'; object-src 'self'"
+	}
+  }
+  

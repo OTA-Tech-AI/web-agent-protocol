@@ -1,0 +1,295 @@
+@font-face {
+    font-family: 'Raleway';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Raleway'), url(../other/Raleway.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    padding: 10px;
+    background: white;
+}
+
+.intro {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -215px;
+    margin-top: -35px;
+}
+
+nav {
+    position: fixed;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 10px;
+}
+
+nav > button {
+    margin-bottom: 0;
+    background: white;
+}
+
+.top {
+    opacity: 1;
+    transition: opacity 300ms;
+}
+
+.top.hidden {
+    pointer-events: none;
+    opacity: 0;
+}
+
+.status {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    color: rgba(139, 0, 0, 0.5);
+    font-size: small;
+    z-index: 1;
+    cursor: help;
+}
+
+.status.connected {
+    display: none;
+}
+
+.events {
+    margin-bottom: 50px;
+    table-layout: fixed;
+}
+
+.events thead th {
+    vertical-align: bottom;
+}
+
+.events thead th input[type=text] {
+    margin-bottom: 9px;
+    height: 30px;
+    font-weight: normal;
+    width: 100%;
+    min-width: 55px;
+}
+
+.events thead th .checkbox {
+    margin-bottom: 9px;
+}
+
+.events td {
+    word-wrap: break-word;
+}
+
+.events .time {
+    display: block;
+    color: #b6b6b6;
+    font-size: small;
+}
+
+.events td:first-child {
+    border-left: solid transparent 5px;
+    padding-left: 4px;
+}
+
+.events tr.nodes-added td:first-child {
+    border-left-color: rgb(138,219,246);
+}
+
+.events tr.nodes-removed td:first-child {
+    border-left-color: rgb(255,198,139);
+}
+
+.events tr.text-changed td:first-child {
+    border-left-color: rgb(254,239,139);
+}
+
+.events tr.attribute-changed td:first-child {
+    border-left-color: rgb(179,146,248);
+}
+
+.events th:nth-child(1), .events td:nth-child(1) {
+    min-width: 155px;
+}
+
+.events th:nth-child(3), .events td:nth-child(3) {
+    /* width: 60%; */
+}
+
+.events td > div {
+    max-height: 85px;
+    overflow: auto;
+}
+
+.events td:nth-child(3) hr {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.events thead .counter {
+    color: #b6b6b6;
+}
+
+.node:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/*
+Filter
+*/
+
+.events tbody tr {
+    display: none;
+}
+
+.events tbody.nodes-added-visible tr.target-match.nodes-added,
+.events tbody.nodes-removed-visible tr.target-match.nodes-removed,
+.events tbody.text-changed-visible tr.target-match.text-changed,
+.events tbody.attribute-changed-visible tr.target-match.attribute-changed {
+    display: table-row;
+}
+
+/*
+Checkbox
+*/
+
+.checkbox {
+    width: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.checkbox label {
+    cursor: pointer;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 0;
+    border-radius: 4px;
+    margin: 0;
+}
+
+.checkbox label:after {
+    opacity: 0;
+    content: '';
+    position: absolute;
+    width: 9px;
+    height: 5px;
+    background: transparent;
+    top: 4px;
+    left: 4px;
+    border: 3px solid #fcfff4;
+    border-top: none;
+    border-right: none;
+
+    transform: rotate(-45deg);
+}
+
+.checkbox label:hover::after {
+    opacity: 0.3;
+}
+
+.checkbox input {
+    visibility: hidden;
+    margin: 0;
+}
+
+.checkbox input[type=checkbox]:checked + label:after {
+    opacity: 1;
+}
+
+.checkbox.nodes-added label {
+    background: rgb(138,219,246);
+}
+
+.checkbox.nodes-removed label {
+    background: rgb(255,198,139);
+}
+
+.checkbox.text-changed label {
+    background: rgb(254,239,139);
+}
+
+.checkbox.attribute-changed label {
+    background: rgb(179,146,248);
+}
+
+.task-description-input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+	min-height: 20px;
+	margin-bottom: 0;
+	resize: none;
+	overflow: hidden;
+	box-sizing: border-box;
+	line-height: 1.4;
+}
+
+.task-description-input.invalid {
+    border: 1px solid #e74c3c;
+}
+
+.task-description-section {
+	padding-bottom: 10px;
+}
+
+.task-description-label {
+	display: none; /* Default hidden */
+	font-size: 16px;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-bottom: 100px;
+	padding: 5px 10px;
+	background-color: #f0f0f0;
+	color: #333;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	white-space: pre-wrap; /* Allow line breaks if task description is long */
+  }
+
+  .task-description-task-id {
+	display: none; /* Default hidden */
+	font-size: 16px;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-bottom: 100px;
+	padding: 5px 10px;
+	background-color: hsl(52, 100%, 57%);
+	color: #333;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	white-space: pre-wrap; /* Allow line breaks if task description is long */
+  }
+
+.hidden { display: none !important; }
+
+.settings-panel {
+	padding: 10px;
+	border-top: 1px solid #ddd;
+}
+
+.settings-panel label {
+	display: block;
+	margin: 6px 0;
+}
+
+/* Make the header a positioning context */
+table.events thead {
+	position: relative;
+  }
+  
+  /* Pin the button */
+  .settings-btn {
+	position: absolute;
+	top:   4px;
+	right: 8px;
+	background-color: #e5e5e5;
+  }

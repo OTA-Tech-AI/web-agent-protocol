@@ -1,8 +1,26 @@
+<!-- markdownlint-disable first-line-h1 -->
+<!-- markdownlint-disable html -->
+<!-- markdownlint-disable no-duplicate-header -->
+
+<div align="center">
+  <img src="chrome-extension/assets/beholder-tool-kit-long.png" width="100%" alt="OTA-tool-kits" style="border-radius: 10px;" />
+</div>
+<br>
+<div align="center" style="line-height: 1;">
+  <a href="https://www.otatech.ai/"><img alt="Homepage"
+	src="https://img.shields.io/badge/Home-Page-blue"/></a>
+  <a href="https://huggingface.co/OTA-AI/OTA-v1"><img alt="Hugging Face"
+	src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-OTA%20AI-ffc107?color=ffc107&logoColor=white"/></a>
+  <a href="https://github.com/OTA-Tech-AI/webagentprotocol/blob/main/LICENSE"><img alt="Code License"
+	src="https://img.shields.io/badge/Code_License-MIT-f5de53?&color=f5deff"/></a>
+  <br><br><br>
+</div>
+
 # Web Agent Protocol specification
 
 This repository lets you
 
-1. **Collect** user‑interaction data with the [OTA‑WAP Chrome extension](https://github.com/OTA-Tech-AI/OTA-WAP-browser-data-collector).
+1. **Collect** user‑interaction data with the [OTA‑WAP Chrome extension](https://github.com/OTA-Tech-AI/webagentprotocol/tree/main/chrome-extension).
 2. **Convert** the raw event stream into either **_exact‑replay_** or **_smart‑replay_** action lists.
 3. **Replay** those lists with our customised *browser‑use* agent.
 

@@ -1,0 +1,23 @@
+{
+  "name": "WAP-Browser-Action-Capturer",
+  "version": "1.3.0",
+  "description": "A simple tool helping you to collect the interactions with browser for WAP replay",
+  "main": "Gruntfile.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/OTA-Tech-AI/webagentprotocol.git"
+  },
+  "author": "Konrad Dzwinel",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/OTA-Tech-AI/webagentprotocol/issues"
+  },
+  "homepage": "https://github.com/OTA-Tech-AI/webagentprotocol",
+  "dependencies": {
+    "grunt": "^1.0.3",
+    "grunt-contrib-csslint": "^2.0.0",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-zip": "^0.17.1"
+  }
+}

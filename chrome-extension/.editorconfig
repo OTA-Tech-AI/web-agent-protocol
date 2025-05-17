@@ -1,0 +1,16 @@
+# top-most EditorConfig file
+root = true
+
+# Newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+# Charset
+[*.{js,html,css,md,json}]
+charset = utf-8
+
+# Indentation
+[*.{js,html,css,json}]
+indent_style = space
+indent_size = 4
