@@ -1,0 +1,10 @@
+__pycache__
+
+cookies*.json
+element_tree.txt
+html/
+data/
+results/
+ota_collect_data/
+subgoals/
+.env

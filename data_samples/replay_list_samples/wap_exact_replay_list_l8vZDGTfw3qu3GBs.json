@@ -1,0 +1,74 @@
+{
+  "ultimate_goal": "Find the best sold keyboard in BestBuy",
+  "task_id": "l8vZDGTfw3qu3GBs",
+  "type": "exact_replay",
+  "action_list": [
+    {
+      "action": "open_tab",
+      "action_params": {
+        "url": "https://www.bestbuy.ca/en-ca"
+      }
+    },
+    {
+      "action": "wait_for_element",
+      "action_params": {
+        "selector": "INPUT.style-module_textField__MdLzL",
+        "timeout": 5000
+      }
+    },
+    {
+      "action": "input_text_by_selector",
+      "action_params": {
+        "selector": "INPUT.style-module_textField__MdLzL",
+        "text": "keyboard"
+      }
+    },
+    {
+      "action": "send_keys",
+      "action_params": {
+        "keys": "Enter"
+      }
+    },
+    {
+      "action": "wait_for_element",
+      "action_params": {
+        "selector": "#Sort",
+        "timeout": 5000
+      }
+    },
+    {
+      "action": "select_option_by_selector",
+      "action_params": {
+        "css_selector": "#Sort",
+        "value": "highestRated"
+      }
+    },
+    {
+      "action": "wait_for_element",
+      "action_params": {
+        "selector": "h3[data-automation=\"productItemName\"]",
+        "timeout": 5000
+      }
+    },
+    {
+      "action": "click_element_by_selector",
+      "action_params": {
+        "css_selector": "h3[data-automation=\"productItemName\"]"
+      }
+    },
+    {
+      "action": "extract_content",
+      "action_params": {
+        "goal": "Find the best sold keyboard in BestBuy",
+        "should_strip_link_urls": false
+      }
+    },
+    {
+      "action": "done",
+      "action_params": {
+        "text": "task executed successfully",
+        "success": true
+      }
+    }
+  ]
+}

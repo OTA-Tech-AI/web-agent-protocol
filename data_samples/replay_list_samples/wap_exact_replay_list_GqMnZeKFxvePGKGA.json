@@ -1,0 +1,86 @@
+{
+  "ultimate_goal": "search for a recipe of baked salmon which takes less than 1 hour to cook",
+  "task_id": "GqMnZeKFxvePGKGA",
+  "type": "exact_replay",
+  "action_list": [
+    {
+      "action": "open_tab",
+      "action_params": {
+        "url": "https://www.allrecipes.com/"
+      }
+    },
+    {
+      "action": "wait_for_element",
+      "action_params": {
+        "selector": "#mntl-search-form--open__search-input",
+        "timeout": 5000
+      }
+    },
+    {
+      "action": "input_text_by_selector",
+      "action_params": {
+        "selector": "#mntl-search-form--open__search-input",
+        "text": "baked salmon"
+      }
+    },
+    {
+      "action": "send_keys",
+      "action_params": {
+        "keys": "Enter"
+      }
+    },
+    {
+      "action": "wait_for_element",
+      "action_params": {
+        "selector": "img[alt=\"Breaded, baked salmon fillets topped with lemon slices, served alongside asparagus slices and rice pilaf on blue plates\"]",
+        "timeout": 5000
+      }
+    },
+    {
+      "action": "click_element_by_selector",
+      "action_params": {
+        "css_selector": "img[alt=\"Breaded, baked salmon fillets topped with lemon slices, served alongside asparagus slices and rice pilaf on blue plates\"]"
+      }
+    },
+    {
+      "action": "go_to_url",
+      "action_params": {
+        "url": "https://www.allrecipes.com/search?q=baked+salmon"
+      }
+    },
+    {
+      "action": "wait_for_element",
+      "action_params": {
+        "selector": "body",
+        "timeout": 8000
+      }
+    },
+    {
+      "action": "wait_for_element",
+      "action_params": {
+        "selector": "img[alt=\"Filet of salmon topped with melted cheese on aluminum foil\"]",
+        "timeout": 5000
+      }
+    },
+    {
+      "action": "click_element_by_selector",
+      "action_params": {
+        "css_selector": "img[alt=\"Filet of salmon topped with melted cheese on aluminum foil\"]"
+      }
+    },
+    {
+      "action": "extract_content",
+      "action_params": {
+        "goal": "search for a recipe of baked salmon which takes less than 1 hour to cook",
+        "should_strip_link_urls": false
+      }
+    },
+    {
+      "action": "done",
+      "action_params": {
+        "text": "task executed successfully",
+        "success": true
+      }
+    }
+  ]
+}
