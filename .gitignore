@@ -8,3 +8,4 @@ results/
 ota_collect_data/
 subgoals/
 .env
+data_processed/

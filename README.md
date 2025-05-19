@@ -31,6 +31,12 @@ Install the dependencies with the following command:
 pip install -r requirements.txt      # Python 3.9+ recommended
 ```
 
+Setup your repo source path:
+```
+set PYTHONPATH=C:/path/to/webagentprotocol # for Windows
+export PYTHONPATH=/path/to/webagentprotocol # for Linux
+```
+
 
 ## Start data‑collection server
 
