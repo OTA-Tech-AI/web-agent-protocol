@@ -112,8 +112,10 @@
 		/* -------------   normal update path   ------------- */
 
 		// non-submit  →  non-submit   (replace & reset timer)
-		clearTimeout(existing.timer);
-		_queue(payload);
+		if (oldType != newType){
+			clearTimeout(existing.timer);
+			_queue(payload);
+		}
 	}
 
     chrome.runtime.onConnect.addListener(function (port) {
