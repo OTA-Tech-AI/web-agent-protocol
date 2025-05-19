@@ -40,13 +40,41 @@
 
     var nodeRegistry = [];
 
-    var bgPageConnection = chrome.runtime.connect({
-        name: "content-script"
-    });
+	let bgPort = null;
+	function openBGPort() {
+		if (bgPort) return;                    // already connected
 
-    bgPageConnection.postMessage({
-        type: 'connected',
-    });
+		bgPort = chrome.runtime.connect({ name: 'content-script' });
+
+		/* the background SW can die or the tab can be bfcached → reconnect */
+		bgPort.onDisconnect.addListener(() => {
+		  console.warn('[CS] BG port gone – will reopen on next send');
+		  bgPort = null;
+		});
+
+		/* tell background that a fresh content-script is alive */
+		try {
+		  bgPort.postMessage({ type: 'connected' });
+		} catch (_) {
+		  /* ignore – the SW might have disappeared in the meantime */
+		}
+	}
+
+	function sendToBG(message) {
+		openBGPort();                          // lazy (re)connect
+
+		try {
+		  bgPort.postMessage(message);
+		} catch (err) {
+		  // “Extension context invalidated” → port is dead
+		  console.warn('[CS] postMessage failed, retrying', err);
+		  bgPort = null;
+		  openBGPort();                        // reopen once
+		  bgPort.postMessage(message);         // retry
+		}
+	}
+
+	openBGPort();
 
     function highlightNode(node, color) {
         color = color || { r: 51, g: 195, b: 240 };
@@ -139,14 +167,10 @@
         };
     }
 
-    function logEvent(event) {
-        event.date = Date.now();
-
-        bgPageConnection.postMessage({
-            type: 'event',
-            event: event
-        });
-    }
+	function logEvent(event) {
+		event.date = Date.now();
+		sendToBG({ type: 'event', event });
+	}
 
     function isAttached(node) {
         if (node === document) {
@@ -494,7 +518,7 @@
 				return;
 			}
 
-			bgPageConnection.postMessage({ type: 'clear-events' });
+			sendToBG({ type: 'clear-events' });
 
 			var summaryEvent = {
 				taskId: taskId,
@@ -608,7 +632,7 @@
 			allEvents.sort((a,b)=>scoreEvent(b)-scoreEvent(a));
 			allEvents = allEvents.slice(0, TopKEvents);
 
-			bgPageConnection.postMessage({ type: 'clear-events' });
+			sendToBG({ type: 'clear-events' });
 
 			var summaryEvent = {
 				taskId: taskId,

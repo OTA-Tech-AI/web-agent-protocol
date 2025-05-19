@@ -215,6 +215,7 @@
 			}
 			// sendDataToCollectorServer(message.summaryEvent);
 			enqueueByHash(message.summaryEvent);
+			sendResponse({ status: 'success' });
 			break;
 		  }
 	  

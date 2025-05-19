@@ -241,42 +241,96 @@
         }
     });
 
-    /**
-     * BACKGROUND PAGE CONNECTION
-     */
-    function injectContentScript() {
-        // Send the tab ID to the background page
-        bgPageConnection.postMessage({
-            type: 'inject',
-            tabId: chrome.devtools.inspectedWindow.tabId,
-            scriptToInject: "js/DOMListener.js"
+
+    /* ------------------------------------------------------------------
+    DevTools-panel  ⇆  background service-worker  robust connection
+    ------------------------------------------------------------------ */
+
+	const INJECT_SCRIPT = 'js/DOMListener.js';   // file you want injected
+    let bgPort = null;               // current live Port → background SW
+
+    /* (re)open the port if needed and install the onMessage handler */
+    function openBGPort() {
+        if (bgPort) return;            // already connected
+
+        bgPort = chrome.runtime.connect({ name: 'devtools-page' });
+        bgPort.onMessage.addListener(handleBGMessage);
+
+        bgPort.onDisconnect.addListener(() => {
+            console.warn('[Panel] BG port disconnected - will reopen on demand');
+            bgPort = null;               // mark as dead; next sendToBG will reopen
         });
     }
 
-    var bgPageConnection = chrome.runtime.connect({
-        name: "devtools-page"
+    /* Safe sender – always use this instead of bgPort.postMessage(...) */
+    function sendToBG(message) {
+        openBGPort();                  // lazy (re)connect
+        try {
+            bgPort.postMessage(message);
+        } catch (err) {                // “Extension context invalidated”
+            console.warn('[Panel] postMessage failed – retrying', err);
+            bgPort = null;               // flush broken port
+            openBGPort();                // reopen
+            bgPort.postMessage(message); // retry once
+        }
+    }
+
+    /* ------------------------------------------------------------------
+    Injection helper – unchanged except that we use sendToBG()
+    ------------------------------------------------------------------ */
+    function injectContentScript() {
+    sendToBG({
+        type: 'inject',
+        tabId: chrome.devtools.inspectedWindow.tabId,
+        scriptToInject: INJECT_SCRIPT
     });
+    }
 
-    bgPageConnection.onMessage.addListener(function handleMessage(message) {
-        if (message.type === 'connected') {
-            statusElem.classList.add('connected');
+    /* ------------------------------------------------------------------
+    Messages coming **from** the background SW
+    ------------------------------------------------------------------ */
+    function handleBGMessage(message) {
+    switch (message.type) {
+        case 'connected': {
+        statusElem.classList.add('connected');
+        eventTable.clear();
 
-            eventTable.clear();
+        if (recording) {
+            ContentScriptProxy.resumeRecording(taskLabel.textContent);
+            setTimeout(() => { getCurrentTaskId(); }, 1_000);
+        }
+        break;
+        }
 
-            if (recording) {
-                ContentScriptProxy.resumeRecording(taskLabel.textContent);
-				setTimeout(() => { getCurrentTaskId(); }, 1000);
-            }
-        } else if (message.type === 'disconnected') {
-            statusElem.classList.remove('connected');
+        case 'disconnected': {
+        statusElem.classList.remove('connected');
+        injectContentScript();                 // try again
+        break;
+        }
 
-            injectContentScript();
-        } else if (message.type === 'event') {
-            eventTable.addEvent(message.event);
-        } else if (message.type === 'clear-events') {
-			eventTable.clear();
-		}
-    });
+        case 'event':
+        eventTable.addEvent(message.event);
+        break;
 
+        case 'clear-events':
+        eventTable.clear();
+        break;
+
+        /* you may add more cases as needed */
+
+        default:
+        console.warn('[Panel] unknown message', message);
+    }
+    }
+
+    /* ------------------------------------------------------------------
+    INITIALISE: open the port and inject the content-script once
+    ------------------------------------------------------------------ */
+    openBGPort();
     injectContentScript();
+
+    /* ------------------------------------------------------------------
+    OPTIONAL: keep-alive pings so the SW does not time out
+    ------------------------------------------------------------------ */
+    setInterval(() => sendToBG({ type: 'keep-alive' }), 20_000);
 })();
