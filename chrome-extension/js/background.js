@@ -59,7 +59,7 @@
 
 
 	function _queue(payload){
-		console.log(payload)
+		console.log("[OTA DOM Background]: adding new payload to queue: ", payload);
 		const key    = payload.eventHash;
 		const timer  = setTimeout(() => {
 			sendDataToCollectorServer(payload);
@@ -132,7 +132,6 @@
         var tabId;
 
         var messageListener = function (message, sender, sendResponse) {
-            console.log('[OTA DOM Background]: devtools panel', message, sender);
 
             if (message.type === 'inject') {
                 tabId = message.tabId;

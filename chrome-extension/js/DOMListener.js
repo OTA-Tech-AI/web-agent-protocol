@@ -858,11 +858,20 @@
 
 		document.addEventListener('click', debouncedClickHandler, true);
 		document.addEventListener('dblclick', dblClickHandler, true);
-		document.addEventListener('submit', submitHandler);
+		document.addEventListener('submit', submitHandler, true);
 		document.addEventListener('change', handleInputChange, true);
 		// window.addEventListener('popstate', handleUserAction);
 		if(task_start){ sendPageContentUpdatetoBackground("task-start"); }
 		pageContentIntervalId = setInterval(() => { sendPageContentUpdatetoBackground("update"); }, 500);
+
+
+		import(chrome.runtime.getURL('js/specialEventHandler.js'))
+		.then(({ init }) => {
+		  init({ nodeToHTMLString, trimTarget, getEventHash, getCurrentHTMLSanitized, taskId });
+		})
+		.catch(err => console.error('Failed to load special handler:', err));
+
+
 		console.log("Started listening and page-content polling every 500ms");
 	}
 

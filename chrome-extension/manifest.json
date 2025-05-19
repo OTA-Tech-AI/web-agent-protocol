@@ -29,6 +29,10 @@
 			]
 		}
 	],
+	"web_accessible_resources": [{
+		"resources": ["js/specialEventHandler.js"],
+		"matches":   ["<all_urls>"]
+	}],
 	"content_security_policy": {
 		"extension_pages": "script-src 'self'; object-src 'self'"
 	}
