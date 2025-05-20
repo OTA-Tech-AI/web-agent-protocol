@@ -22,7 +22,7 @@ OTA WAP Browser Action Capturer
 
 OTA browser action capturer is a simple tool which helps you to collect the interactions with browser such as click, typing etc. and transforms them to well structured data for generating LLM-powered "records and replay" instructions. The action data will be organized in a JSON format and sent to your local WAP server of data collection.
 
-To deploy the local WAP server, please refer to: 
+To deploy the local WAP server, please refer to: https://github.com/OTA-Tech-AI/webagentprotocol
 WAP (Web Agent protocol) is our standard protocol for AI Agent record-and-play inferencing.
 
 

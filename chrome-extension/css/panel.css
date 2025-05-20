@@ -287,9 +287,39 @@ table.events thead {
   }
   
   /* Pin the button */
-  .settings-btn {
+.settings-btn {
 	position: absolute;
 	top:   4px;
 	right: 8px;
 	background-color: #e5e5e5;
-  }
+}
+
+.social-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.website-btn {
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 5px 10px;
+    color: #fff;
+    background: #000d1d;
+    border-radius: 15px;
+    text-decoration: none;
+}
+
+.website-btn:hover,
+.website-btn:focus {
+	color: #fff;
+    background: #00223d;
+    outline: none;
+}
+
+.website-btn:active {
+	color: #fff;
+    background: #00294e;
+}
