@@ -3,7 +3,7 @@ from browser_use.agent.views import ActionModel
 from browser_use.browser.context import BrowserContext
 from browser_use.controller.service import Controller
 
-import re
+import re, html
 from typing import Iterable, List, Dict, TypeVar, Optional, Tuple
 from langchain_core.language_models.chat_models import BaseChatModel
 Context = TypeVar('Context')
@@ -45,7 +45,7 @@ def _extract_inner_text_tag_type(raw_html: str) -> Tuple[str | None, str | None,
         stripped = _STRIP_RX.sub("", raw_html)
         stripped = re.sub(r"\s+", " ", stripped).strip()
         if stripped:
-            text = stripped
+            text = html.unescape(stripped)
     return text, tag, itype
 
 
