@@ -106,10 +106,7 @@ data_processed/exact_replay/
 
 ## Run the agent
 ```bash
-python run_replay.py \
-       --model-provider openai \
-       --wap_replay_list data_processed/exact_replay/wap_exact_replay_list_<task_id>.json \
-       --max-concurrent 1
+python run_replay.py --model-provider openai --wap_replay_list data_processed/exact_replay/wap_exact_replay_list_<task_id>.json --max-concurrent 1
 ```
 Swap the path for the smart‑replay JSON to test that mode.
 
