@@ -32,6 +32,10 @@ conda create -n WAP python=3.11
 ```
 
 ```bash
+conda activate WAP
+```
+
+```bash
 pip install -r requirements.txt      # Python 3.9+ recommended
 ```
 
