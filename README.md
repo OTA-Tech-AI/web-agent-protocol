@@ -27,16 +27,22 @@ This repository lets you
 ## Setup
 Install the dependencies with the following command:
 
+Create a conda env
+
 ```bash
 conda create -n WAP python=3.11
 ```
+
+Activate the conda env
 
 ```bash
 conda activate WAP
 ```
 
+Install the dependencies
+
 ```bash
-pip install -r requirements.txt      # Python 3.9+ recommended
+pip install -r requirements.txt
 ```
 
 Setup your repo source path:
