@@ -28,6 +28,10 @@ This repository lets you
 Install the dependencies with the following command:
 
 ```bash
+conda create -n WAP python=3.11
+```
+
+```bash
 pip install -r requirements.txt      # Python 3.9+ recommended
 ```
 
