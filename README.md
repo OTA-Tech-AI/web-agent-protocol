@@ -88,8 +88,8 @@ An example of the formatted data which you will received in the WAP backend serv
 
 | Mode                                               | Command                                                                                                                                                                |
 | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Exact replay** – exactly reproduce every action | `python wap_replay/generate_exact_replay_list.py --data_dir_path data/20250423/<task_id> --output_dir_path data_processed/exact_replay` |
-| **Smart replay** – condensed goal‑oriented steps   | `python wap_replay/generate_smart_replay_list.py --data_dir_path data/20250423/<task_id> --output_dir_path data_processed/smart_replay` |
+| **Exact replay** – exactly reproduce every action | `python wap_replay/generate_exact_replay_list.py --data_dir_path data/<date>/<task_id> --output_dir_path data_processed/exact_replay` |
+| **Smart replay** – condensed goal‑oriented steps   | `python wap_replay/generate_smart_replay_list.py --data_dir_path data/<date>/<task_id> --output_dir_path data_processed/smart_replay` |
 
 Replace **<task_id>** with the folder produced by the extension
 (e.g. em3h6UBDZykz0gnH).
