@@ -16,13 +16,34 @@
   <br><br><br>
 </div>
 
-# Web Agent Protocol specification
+# Web Agent Protocol
 
 This repository lets you
 
 1. **Collect** user‑interaction data with the [OTA‑WAP Chrome extension](https://github.com/OTA-Tech-AI/webagentprotocol/tree/main/chrome-extension).
 2. **Convert** the raw event stream into either **_exact‑replay_** or **_smart‑replay_** action lists.
 3. **Replay** those lists with our customised *browser‑use* agent.
+
+## Overview
+
+The Web Agent Protocol (WAP) is a standardized framework designed to enable seamless interaction between users, web agents, and browsers by recording and replaying browser actions. It separates the concerns of action recording and execution, allowing for efficient automation and reusability. The Python SDK for WAP implements the full specification, making it easy to:
+
+- Record browser actions from human or agent interactions.
+- Replay recorded actions using the WAP-Replay protocol to ensure accurate browser operations.
+- Convert recorded actions into MCP servers for reuse by any agent or user.
+
+### Without WAP
+![image](https://github.com/user-attachments/assets/843ea9da-45c0-48e9-8a25-44f5bfb31786)
+
+### WAP Record
+![image](https://github.com/user-attachments/assets/3d041f56-9e76-4b61-9b56-0686070723a3)
+
+### WAP Replay
+![image](https://github.com/user-attachments/assets/e13ca7c7-3cc1-4952-8a79-3bd1e9e98580)
+
+## Example using WAP
+![image](https://github.com/user-attachments/assets/c8fc4645-babf-4bcd-82ad-3e5eafb62b64)
+
 
 ## Setup
 Install the dependencies with the following command:
