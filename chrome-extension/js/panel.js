@@ -310,7 +310,11 @@
     DevTools-panel  ⇆  background service-worker  robust connection
     ------------------------------------------------------------------ */
 
-	const INJECT_SCRIPT = 'js/DOMListener.js';   // file you want injected
+	const INJECT_FILES = [
+	  'lib/purify.min.js',
+	  'js/elementProcess.js',
+	  'js/DOMListener.js'
+	];
     let bgPort = null;               // current live Port → background SW
 
     /* (re)open the port if needed and install the onMessage handler */
@@ -346,7 +350,7 @@
     sendToBG({
         type: 'inject',
         tabId: chrome.devtools.inspectedWindow.tabId,
-        scriptToInject: INJECT_SCRIPT
+		files: INJECT_FILES
     });
     }
 

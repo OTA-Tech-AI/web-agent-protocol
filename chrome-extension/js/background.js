@@ -141,7 +141,7 @@
 
 				chrome.scripting.executeScript({
 					target: { tabId: message.tabId },
-					files: [message.scriptToInject]
+					files: message.files
 				}, (injectionResults) => {
 					if (chrome.runtime.lastError) {
 						console.log('[OTA DOM Background]: Error injecting script', chrome.runtime.lastError);
