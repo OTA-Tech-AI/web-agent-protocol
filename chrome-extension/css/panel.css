@@ -19,8 +19,12 @@ body {
     position: absolute;
     left: 50%;
     top: 50%;
-    margin-left: -215px;
-    margin-top: -35px;
+    transform: translate(-50%, -50%);
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 nav {

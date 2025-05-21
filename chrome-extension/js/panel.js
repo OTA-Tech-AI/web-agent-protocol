@@ -193,8 +193,72 @@
 		}
 
   }
-	
-    recordBtn.addEventListener('click', recordBtnHandler);
+
+	function waitForContentScript (timeoutMs = 4000) {
+	return new Promise((resolve, reject) => {
+		const timer = setTimeout(() => {
+		bgPort.onMessage.removeListener(listener);
+		reject(new Error('content-script not injected in time'));
+		}, timeoutMs);
+
+		function listener (msg) {
+		if (msg?.type === 'connected') {
+			clearTimeout(timer);
+			bgPort.onMessage.removeListener(listener);
+			resolve(true);
+		}
+		}
+		bgPort.onMessage.addListener(listener);
+	});
+	}
+
+	function getCurrentOriginPattern () {
+	return new Promise(resolve => {
+		chrome.devtools.inspectedWindow.eval('window.location.href',
+		(url, exc) => {
+			if (exc?.isException || !url) {
+			console.warn('[OTA panel] could not read inspected URL', exc);
+			return resolve(null);
+			}
+			try {
+			const originPattern = new URL(url).origin + '/*';
+			resolve(originPattern);
+			} catch (e) {
+			console.error('[OTA panel] bad URL', url, e);
+			resolve(null);
+			}
+		});
+	});
+	}
+
+	/** Ask the user (once) for host permission to the current origin and,
+	 *  when granted, inject the content-script.  */
+	async function ensurePagePermission () {
+	const originPattern = await getCurrentOriginPattern();
+	console.log(originPattern)
+	if (!originPattern) return false;                 // nothing we can do
+
+	const needed = { origins: [originPattern] };
+	// Already have it?
+	if (await chrome.permissions.contains(needed)) return true;
+	// Prompt the user
+	const granted = await chrome.permissions.request(needed);
+	if (!granted) return false;                      // user pressed “Deny”
+
+	injectContentScript();                           // do the actual injection
+	return waitForContentScript();                   // <- polling helper
+	}
+
+	recordBtn.addEventListener('click', async () => {
+		if (!recording) {
+			const ok = await ensurePagePermission();
+			if (!ok) {                         // user denied → abort start
+			alert('Action capturer fails to obtain access to the page.');
+			return;
+			}
+		}
+		recordBtnHandler();                  // your existing logic
+	});
 
 	taskVisibilityBtn.addEventListener('click', function () {
 		if (taskSection.style.display === 'none') {

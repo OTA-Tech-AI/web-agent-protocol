@@ -8,13 +8,13 @@
 		"48": "ico/ota-logo-48.png"
 	},
 	"permissions": [
-		"tabs",
+		"activeTab",
 		"webNavigation",
 		"scripting",
 		"storage"
 	],
-	"host_permissions": [
-		"<all_urls>"
+	"optional_host_permissions": [
+		"*://*/*"
 	],
 	"background": {
 		"service_worker": "js/background.js"
