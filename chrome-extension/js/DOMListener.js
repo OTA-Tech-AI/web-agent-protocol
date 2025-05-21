@@ -324,8 +324,20 @@
 			  type: 'task-start',
 			  summaryEvent: summaryEvent
 			}, function(response) {
+
 				taskId = response.taskId;
-			  console.log("Content script: Task start message sent", response);
+				console.log("Content script: Task start message sent", response);
+
+				if (window.SpecialEvents?.init) {
+					window.SpecialEvents.init({
+						nodeToHTMLString,
+						trimTarget,
+						getEventHash,
+						getCurrentHTMLSanitized,
+						taskId
+					});
+				}
+
 			});
 		  } else if (status === "task-finish"){
 			var summaryEvent = {
@@ -860,29 +872,18 @@
 		document.addEventListener('dblclick', dblClickHandler, true);
 		document.addEventListener('submit', submitHandler, true);
 		document.addEventListener('change', handleInputChange, true);
-		// window.addEventListener('popstate', handleUserAction);
 		if(task_start){ sendPageContentUpdatetoBackground("task-start"); }
 		pageContentIntervalId = setInterval(() => { sendPageContentUpdatetoBackground("update"); }, 500);
-
-
-		import(chrome.runtime.getURL('js/specialEventHandler.js'))
-		.then(({ init }) => {
-		  init({ nodeToHTMLString, trimTarget, getEventHash, getCurrentHTMLSanitized, taskId });
-		})
-		.catch(err => console.error('Failed to load special handler:', err));
-
-
 		console.log("Started listening and page-content polling every 500ms");
 	}
 
 	function removeListeners(task_finish=false){
 		if(task_finish){ sendPageContentUpdatetoBackground("task-finish"); }
 		observer.disconnect();
-		document.removeEventListener('click', debouncedClickHandler);
-		document.removeEventListener('dblclick', dblClickHandler);
-		document.removeEventListener('submit', submitHandler);
-		document.removeEventListener('change', handleInputChange);
-		// window.removeEventListener('popstate', handleUserAction);
+		document.removeEventListener('click', debouncedClickHandler, true);
+		document.removeEventListener('dblclick', dblClickHandler, true);
+		document.removeEventListener('submit', submitHandler, true);
+		document.removeEventListener('change', handleInputChange, true);
 
 		if (pageContentIntervalId  != null) {
 			clearInterval(pageContentIntervalId );

@@ -1,3 +1,4 @@
+(function () {
 /******************************************************************
  *  specialEventHandler.js
  *  --------------------------------------------------------------
@@ -20,8 +21,6 @@ const _handlers = [];
 function register(hostPattern, initFn) { _handlers.push({hostPattern, initFn}); }
 
 /* ----------  H A N D L E R S  --------------------------------------------- */
-/* 1. Google search <textarea> or blue ‘Search’ button
- *    Works on google.com, google.ca, …                                        */
 register(/(^|\.)google\.[a-z.]+$/, ({
 	nodeToHTMLString,
 	trimTarget,
@@ -35,6 +34,7 @@ register(/(^|\.)google\.[a-z.]+$/, ({
 
   function report(value, originEl) {
 	const evHash = getEventHash();
+
   
 	const actionTarget = {
 	  type       : 'submit',
@@ -88,7 +88,7 @@ register(/(^|\.)google\.[a-z.]+$/, ({
 /* -------------------------------------------------------------------------- */
 /** Call once from DOMListener.  Attaches every handler that matches
  *  the current hostname.                                                     */
-export function init (deps) {
+function init (deps) {
   const host = location.hostname;
   _handlers.forEach(({hostPattern, initFn}) => {
     if (hostPattern.test(host)) {
@@ -100,3 +100,7 @@ export function init (deps) {
     }
   });
 }
+
+  window.SpecialEvents = { init };
+
+})();

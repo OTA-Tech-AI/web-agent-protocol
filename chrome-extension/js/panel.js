@@ -234,11 +234,10 @@
 	/** Ask the user (once) for host permission to the current origin and,
 	 *  when granted, inject the content-script.  */
 	async function ensurePagePermission () {
-	const originPattern = await getCurrentOriginPattern();
-	console.log(originPattern)
-	if (!originPattern) return false;                 // nothing we can do
-
-	const needed = { origins: [originPattern] };
+	// const originPattern = await getCurrentOriginPattern();
+	// if (!originPattern) return false;
+	// const needed = { origins: [originPattern] };
+	const needed = { origins: ['*://*/*'] };
 	// Already have it?
 	if (await chrome.permissions.contains(needed)) return true;
 	// Prompt the user
@@ -313,6 +312,7 @@
 	const INJECT_FILES = [
 	  'lib/purify.min.js',
 	  'js/elementProcess.js',
+	  'js/specialEventHandler.js',
 	  'js/DOMListener.js'
 	];
     let bgPort = null;               // current live Port → background SW
