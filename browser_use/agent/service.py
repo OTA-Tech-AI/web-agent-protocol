@@ -1009,7 +1009,7 @@ class Agent(Generic[Context]):
 					await on_step_end(self)
 
 				if self.state.history.is_done():
-					if self.settings.validate_output and step < max_steps - 1:
+					if self.settings.validate_output and step < max_steps - 1 and self.replay_mode != "exact_replay" and self.replay_mode != "smart_replay":
 						if not await self._validate_output():
 							continue
 
