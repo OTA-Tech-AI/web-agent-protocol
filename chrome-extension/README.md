@@ -29,7 +29,9 @@ WAP (Web Agent protocol) is our standard protocol for AI Agent record-and-play i
 Installation
 -----
 
-TBD
+Install our public Chrome extension at [WAP Browser Action Capturer](https://chromewebstore.google.com/detail/wap-browser-action-captur/chikiefojkdpmijbhepipdkadcljlbmh).
+
+If you want to install this extension locally, please refer to: https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world
 
 Usage of Action Capturer
 -----

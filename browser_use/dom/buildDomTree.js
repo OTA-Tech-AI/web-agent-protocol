@@ -728,7 +728,6 @@
         rect.top > window.innerHeight ||
         rect.right < 0 ||
         rect.left > window.innerWidth) {
-		console.log("anchor1")
         return false;
       }
     } else {
@@ -737,7 +736,6 @@
         rect.top > window.innerHeight + viewportExpansion ||
         rect.right < 0 ||
         rect.left > window.innerWidth) {
-			console.log("anchor2", rect, viewportExpansion, window.innerHeight, window.innerWidth);
         return false;
       }
     }
@@ -747,7 +745,6 @@
 
     // If we're in an iframe, elements are considered top by default
     if (doc !== window.document) {
-		console.log("anchor3")
       return true;
     }
 
@@ -763,7 +760,6 @@
           'elementFromPoint'
         );
         if (!topEl) {
-			console.log("anchor4")
 			return false;
 		}
 		
@@ -771,15 +767,12 @@
         let current = topEl;
         while (current && current !== shadowRoot) {
           if (current === element) {
-			console.log("anchor5")
 			return true;
 		  }
           current = current.parentElement;
         }
-		console.log("anchor6")
         return false;
       } catch (e) {
-		console.log("anchor7")
         return true;
       }
     }
@@ -1023,7 +1016,7 @@
 	  } else {
 		  nodeData.isVisible = isElementVisible(node);
 		  if (nodeData.isVisible) {
-			nodeData.isTopElement = true; //isTopElement(node);
+			nodeData.isTopElement = isTopElement(node); // true
 			if (nodeData.isTopElement) {
 			  nodeData.isInteractive = isInteractiveElement(node);
 			  if (nodeData.isInteractive) {
