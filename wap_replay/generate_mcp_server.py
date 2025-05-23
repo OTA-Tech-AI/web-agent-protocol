@@ -6,6 +6,9 @@ import argparse
 from typing import Optional
 import utils.llm
 import glob
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def extract_ultimate_goal(task_id: str) -> str:
     """
