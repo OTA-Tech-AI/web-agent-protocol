@@ -8,7 +8,7 @@
 <br>
 <div align="center" style="line-height: 1;">
   <a href="https://www.otatech.ai/"><img alt="Homepage"
-    src="https://img.shields.io/badge/Home-Page-blue"/></a>
+    src="https://img.shields.io/badge/Visit-otatech.ai-blue"/></a>
   <a href="https://huggingface.co/OTA-AI/OTA-v1"><img alt="Hugging Face"
     src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-OTA%20AI-ffc107?color=ffc107&logoColor=white"/></a>
   <a href="https://github.com/OTA-Tech-AI/webagentprotocol/tree/main/chrome-extension/LICENSE"><img alt="Code License"
@@ -29,7 +29,7 @@ WAP (Web Agent protocol) is our standard protocol for AI Agent record-and-play i
 Installation
 -----
 
-Install our public Chrome extension at [WAP Browser Action Capturer](https://chromewebstore.google.com/detail/wap-browser-action-captur/chikiefojkdpmijbhepipdkadcljlbmh).
+Install our public **Chrome extension** at [WAP Browser Action Capturer](https://chromewebstore.google.com/detail/wap-browser-action-captur/chikiefojkdpmijbhepipdkadcljlbmh).
 
 If you want to install this extension locally, please refer to: https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world
 

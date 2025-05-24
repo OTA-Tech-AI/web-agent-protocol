@@ -8,7 +8,7 @@
 <br>
 <div align="center" style="line-height: 1;">
   <a href="https://www.otatech.ai/"><img alt="Homepage"
-	src="https://img.shields.io/badge/Home-Page-blue"/></a>
+	src="https://img.shields.io/badge/Visit-otatech.ai-blue"/></a>
   <a href="https://huggingface.co/OTA-AI/OTA-v1"><img alt="Hugging Face"
 	src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-OTA%20AI-ffc107?color=ffc107&logoColor=white"/></a>
   <a href="https://github.com/OTA-Tech-AI/webagentprotocol/blob/main/LICENSE"><img alt="Code License"
@@ -71,15 +71,27 @@ set PYTHONPATH=C:/path/to/webagentprotocol # for Windows
 export PYTHONPATH=/path/to/webagentprotocol # for Linux
 ```
 
+Create **.env** file under the repo root directory with your own API keys:
+```
+OPENAI_API_KEY=sk-proj-...
+DEEPSEEK_API_KEY=sk-...
+```
 
-## Start data‑collection server
+## Record
+
+### WAP record extension
+Please refer to [OTA‑WAP Chrome Extension](https://github.com/OTA-Tech-AI/webagentprotocol/tree/main/chrome-extension) to setup action capturer in your Chrome browser.
+
+### Start data‑collection server
 
 Run the following command to start the server to collect data from the extension:
 ```bash
 python action_collect_server.py
 ```
+**Once the server is up, you can start to record from the page using WAP Chrome extension.**
 
-The server listens on http://localhost:4934/action-data and saves each session to:
+The server listens on http://localhost:4934/action-data by default, please make sure the Host and Port in the extension settings match this server config.
+Each session will be saved to:
 
 ```bash
 data/YYYYMMDD/taskid/summary_event_<timestamp>.json
@@ -124,7 +136,7 @@ data_processed/exact_replay/
  └─ wap_smart_replay_list_<task_id>.json   # final exact replay list for the agent
 ```
 
-## Run the agent
+## Replay
 ```bash
 python run_replay.py --model-provider openai --wap_replay_list data_processed/exact_replay/wap_exact_replay_list_<task_id>.json --max-concurrent 1
 ```
