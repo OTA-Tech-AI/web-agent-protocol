@@ -140,7 +140,7 @@ data_processed/exact_replay/
 ```bash
 python run_replay.py --model-provider openai --wap_replay_list data_processed/exact_replay/wap_exact_replay_list_<task_id>.json --max-concurrent 1
 ```
-Swap the path for the smart‑replay JSON to test that mode.
+For **smart-replay**, replace the path with a smart‑replay JSON to test this mode.
 
 ## Convert to MCP Server
 
