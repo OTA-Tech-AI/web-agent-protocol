@@ -18,19 +18,18 @@
 
 # Web Agent Protocol
 
-This repository lets you
-
-1. **Collect** user‑interaction data with the [OTA‑WAP Chrome extension](https://github.com/OTA-Tech-AI/webagentprotocol/tree/main/chrome-extension).
-2. **Convert** the raw event stream into either **_exact‑replay_** or **_smart‑replay_** action lists.
-3. **Replay** those lists with our customised *browser‑use* agent.
-
 ## Overview
 
 The Web Agent Protocol (WAP) is a standardized framework designed to enable seamless interaction between users, web agents, and browsers by recording and replaying browser actions. It separates the concerns of action recording and execution, allowing for efficient automation and reusability. The Python SDK for WAP implements the full specification, making it easy to:
 
-- Record browser actions from human or agent interactions.
-- Replay recorded actions using the WAP-Replay protocol to ensure accurate browser operations.
-- Convert recorded actions into MCP servers for reuse by any agent or user.
+1. **Collect** user‑interaction data with the [OTA‑WAP Chrome extension](https://github.com/OTA-Tech-AI/webagentprotocol/tree/main/chrome-extension).
+2. **Convert** the raw event stream into either **_exact‑replay_** or **_smart‑replay_** action lists.
+3. **Convert** recorded actions into **_MCP_** servers for reuse by any agent or user
+4. **Replay** those lists using the **_WAP-Replay_** protocol to ensure accurate browser operations.
+
+### WAP FULL DEMO
+
+[![Watch the video](https://img.youtube.com/vi/joh9FXJfnwk/0.jpg)](https://www.youtube.com/watch?v=joh9FXJfnwk)
 
 ### Without WAP
 ![image](https://github.com/user-attachments/assets/843ea9da-45c0-48e9-8a25-44f5bfb31786)
@@ -132,11 +131,30 @@ python run_replay.py --model-provider openai --wap_replay_list data_processed/ex
 Swap the path for the smart‑replay JSON to test that mode.
 
 ## Convert to MCP Server
+
 ```bash
 python wap_replay\generate_mcp_server.py --task_id <task_id>
 ```
 
 converted MCP servers will be located under ``` mcp_servers ``` folder
+
+## Replay with MCP
+
+You would need 2 terminals to replay with MCP. In the first termnial
+```bash
+python wap_service.py
+```
+
+In the second termnial
+```bash
+python mcp_client.py
+```
+
+Then enter your prompt in the second terminal
+
+```bash
+example: find a top rated keyboard on amazon.ca using smart replay
+```
 
 ## Troubleshooting
 
@@ -144,3 +162,11 @@ converted MCP servers will be located under ``` mcp_servers ``` folder
 
 “no task‑start file” – ensure the extension recorded a full session;
 the generators require exactly one task-start and one task-finish record.
+
+## Acknowledgement
+
+Browser-Use: https://github.com/browser-use/browser-use
+
+MCP: https://github.com/modelcontextprotocol/python-sdk
+
+DOM Extension: https://github.com/kdzwinel/DOMListenerExtension
