@@ -1,0 +1,39 @@
+{
+  "ultimate_goal": "find a top rated keyboard on amazon.ca",
+  "task_id": "y757R6w6y17LVHXl",
+  "type": "smart_replay",
+  "subgoal_list": [
+    {
+      "index": 0,
+      "subgoal": "task starts, go for the next sub-goal"
+    },
+    {
+      "index": 1,
+      "subgoal": "Search for 'top rated keyboard' on amazon.ca to find the best options."
+    },
+    {
+      "index": 2,
+      "subgoal": "Enter 'keyboard' as the search term in the search input field and press enter key."
+    },
+    {
+      "index": 3,
+      "subgoal": "Click on the dropdown labeled 'Sort by:' to change sorting options."
+    },
+    {
+      "index": 4,
+      "subgoal": "Click on the option labeled 'Avg. customer review' in the sort dropdown menu."
+    },
+    {
+      "index": 5,
+      "subgoal": "Click on the first product"
+    },
+    {
+      "index": 6,
+      "subgoal": "GOAL-NOT-ACHIEVED"
+    },
+    {
+      "index": 7,
+      "subgoal": "task done"
+    }
+  ]
+}

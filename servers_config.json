@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "find_top_rated_keyboard_amazon_ca": {
+      "command": "python",
+      "args": [
+        ".\\mcp_servers\\find_top_rated_keyboard_amazon_ca_y757R6w6y17LVHXl_mcp_server.py"
+      ]
+    }
+  }
+}
