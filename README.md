@@ -168,6 +168,13 @@ Then enter your prompt in the second terminal
 example: find a top rated keyboard on amazon.ca using smart replay
 ```
 
+## Replay with our Desktop App
+
+We provide out-of-box desktop app for running replay lists. It is easy to install and you don't need any extra steps for setup and deployments. Visit [WAP Replay Tool releases](https://github.com/OTA-Tech-AI/web-agent-protocol/releases) for more details.
+
+<img src="assets/wap_replay_tool_demo.gif" alt="WAP Replay Tool Demo GIF" width="500"/>
+
+
 ## Troubleshooting
 
 **ModuleNotFoundError** – run commands from the project root or export PYTHONPATH=. (set PYTHONPATH=. for Windows).
