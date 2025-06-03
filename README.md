@@ -41,8 +41,7 @@ The Web Agent Protocol (WAP) is a standardized framework designed to enable seam
 ![image](https://github.com/user-attachments/assets/e13ca7c7-3cc1-4952-8a79-3bd1e9e98580)
 
 ## Example using WAP
-![image](https://github.com/user-attachments/assets/c8fc4645-babf-4bcd-82ad-3e5eafb62b64)
-
+![image](https://github.com/user-attachments/assets/ccb7387b-0677-498c-b4ad-a10590e37e27)
 
 ## Setup
 Install the dependencies with the following command:
