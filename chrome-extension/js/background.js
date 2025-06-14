@@ -1,6 +1,11 @@
 (function () {
     "use strict";
 
+	let popupPort = null;
+	const eventHistoryMap = {}; 
+	const recordingStateMap = {};
+
+
 	const taskIdMap = {};
 	const lastPageGoToTimestamps = {};
 	let collectorHost = "127.0.0.1";
@@ -124,6 +129,57 @@
         } else if (port.name === 'content-script') {
             handleContentScriptConnection(port);
         }
+		else if (port.name === 'popup') {
+			popupPort = port;
+			port.onDisconnect.addListener(() => { popupPort = null; });
+
+			chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {
+				const tid = tabs[0]?.id;
+				console.log(`🔍 [BG→popup] popup connected, querying history for tabId =`, tid,
+              	'history length =', (eventHistoryMap[tid] || []).length);
+				if (tid != null) {
+					(eventHistoryMap[tid] || []).forEach((ev, i) => {
+						console.log(`  → event[${i}] =`, ev);
+						popupPort.postMessage({ type: 'event', event: ev });
+					});
+					popupPort.postMessage({
+						type: 'recording-state',
+						tabId: tid,
+						recording: !!recordingStateMap[tid]
+					});
+				}
+			});
+
+			port.onMessage.addListener(msg => {
+				const { type, tabId, desc } = msg;
+
+				// —— 1) 拉回历史
+				if (type === 'get-history' && typeof tabId === 'number') {
+					const history = eventHistoryMap[tabId] || [];
+					history.forEach(ev => popupPort.postMessage({ type: 'event', event: ev }));
+					return;
+				}
+
+				// —— 2) 拉回当前录制状态
+				if (type === 'get-recording-state' && typeof tabId === 'number') {
+					const isRec = !!recordingStateMap[tabId];
+					popupPort.postMessage({ type: 'recording-state', tabId, recording: isRec });
+					return;
+				}
+
+				// —— 3) popup 发来的开始/停止录制命令
+				if (type === 'start-record' && typeof tabId === 'number') {
+					const p = devToolsPorts[tabId];
+					if (p) p.postMessage({ type: 'popup-start', desc });
+					return;
+				}
+				if (type === 'stop-record' && typeof tabId === 'number') {
+					const p = devToolsPorts[tabId];
+					if (p) p.postMessage({ type: 'popup-stop' });
+					return;
+				}
+			});
+		}
     });
 
     var devToolsPorts = {};
@@ -149,7 +205,20 @@
 						console.log('[OTA DOM Background]: Script injected successfully', injectionResults);
 					}
 				});
-            } else {
+            } 
+			else if (message.type === 'panel-record-started') {
+				recordingStateMap[tabId] = true;
+				if (popupPort) {
+					popupPort.postMessage({ type: 'recording-state', tabId, recording: true });
+				}
+			}
+			else if (message.type === 'panel-record-stopped') {
+				recordingStateMap[tabId] = false;
+				if (popupPort) {
+					popupPort.postMessage({ type: 'recording-state', tabId, recording: false });
+				}
+			}
+			else {
                 //pass message from DevTools panel to a content script
                 if (contentScriptPorts[tabId]) {
                     contentScriptPorts[tabId].postMessage(message);
@@ -175,9 +244,22 @@
             console.log('[OTA DOM Background]: content script status: ', message.type, ', tab ID: ', tabId);
 
             //pass message from content script to the appropriate DevTools panel
+			if (message.type === 'event') { //如果有信息就缓存起来，到时候给popup发
+				if (!eventHistoryMap[tabId]) eventHistoryMap[tabId] = [];
+				eventHistoryMap[tabId].push(message.event);
+				console.log(
+					`🔍 [BG] eventHistoryMap[${tabId}].length =`,
+					eventHistoryMap[tabId].length
+				);
+			}else{
+				console.log('[BG] NOT caching type=', message.type);
+			}
             if (devToolsPorts[tabId]) {
                 devToolsPorts[tabId].postMessage(message);
             }
+			if (popupPort) {
+	           	popupPort.postMessage(message);
+	        }
         };
 
         port.onMessage.addListener(messageListener);
@@ -191,6 +273,9 @@
                     type: 'disconnected'
                 });
             }
+			if (popupPort) {
+	           	popupPort.postMessage({ type: 'disconnected' });
+	        }
         });
     }
 

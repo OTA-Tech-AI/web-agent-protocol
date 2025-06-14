@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OTA Events</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/panel.css">
+
+  <style>
+    html, body {
+      width: 800px;
+      height: 800px;
+      overflow: auto;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <input type="text"
+          class="task-desc-input"
+          placeholder="Describe your task…"/>
+    <button class="button-primary record-btn">Start Record</button>
+    <button class="clear">Clear</button>
+  </nav>
+  <main>
+    <table class="events u-full-width">
+      <thead>
+        <tr>
+          <!-- 复制过来的过滤 UI -->
+          <th>
+            <div class="type-filters">
+              <div class="checkbox nodes-added" title="nodes added">
+                <input type="checkbox" id="nodes-added-filter" checked/>
+                <label for="nodes-added-filter"></label>
+              </div>
+              <div class="checkbox nodes-removed" title="nodes removed">
+                <input type="checkbox" id="nodes-removed-filter" checked/>
+                <label for="nodes-removed-filter"></label>
+              </div>
+              <div class="checkbox attribute-changed" title="attribute changed">
+                <input type="checkbox" id="attribute-changed-filter" checked/>
+                <label for="attribute-changed-filter"></label>
+              </div>
+              <div class="checkbox text-changed" title="text changed">
+                <input type="checkbox" id="text-changed-filter" checked/>
+                <label for="text-changed-filter"></label>
+              </div>
+            </div>
+            Event <span class="counter">(0)</span>
+          </th>
+          <!-- 目标过滤 -->
+          <th>
+            <input type="text" placeholder="filter" class="target-filter"/>
+            Target
+          </th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+  </main>
+
+  <script src="js/EventTable.js"></script>
+  <script src="js/popup.js"></script>
+</body>
+</html>
