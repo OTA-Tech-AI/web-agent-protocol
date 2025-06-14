@@ -155,6 +155,8 @@
 		  taskVisibilityBtn.innerText = 'Hide Task';
 		  taskSection.style.display   = 'block';   // Task visible by default
 
+		  sendToBG({ type: 'panel-record-started' });
+
 		  /* Optional intro fade-out (unchanged) */
 			if (intro.style.display !== 'none') {
 				intro.animate([{ opacity: 1 }, { opacity: 0 }], 300)
@@ -184,6 +186,8 @@
 		  taskSection.style.display = 'block';
 
       eventTable.clear();
+
+	  sendToBG({ type: 'panel-record-stopped' });
 
       /* Optional intro fade-out (unchanged) */
       intro.style.display = 'block';     // make it visible immediately
@@ -383,6 +387,40 @@
         case 'clear-events':
         eventTable.clear();
         break;
+
+
+		case 'popup-start': {
+			// 来自 popup 的开始录制
+			const desc = message.desc;
+			// 复用 recordBtnHandler 里的 Start 流程（不重复 UI 逻辑）
+			ContentScriptProxy.startRecording(desc);
+			// 更新面板 UI
+			showLabel(desc);
+			recordBtn.innerText = 'Finish Record';
+			pauseResumeBtn.disabled = false;
+			recording = true;
+			// 请求并显示 taskId
+			setTimeout(() => getCurrentTaskId(), 1000);
+			// 通知 background “面板已开始”
+			sendToBG({ type: 'panel-record-started' });
+			break;
+		}
+
+		case 'popup-stop': {
+			// 来自 popup 的停止录制
+			ContentScriptProxy.finishRecording();
+			// 恢复面板 UI
+			showInput(true);
+			recordBtn.innerText = 'Start Record';
+			pauseResumeBtn.disabled = true;
+			taskVisibilityBtn.hidden = true;
+			eventTable.clear();
+			recording = false;
+			// 通知 background “面板已停止”
+			sendToBG({ type: 'panel-record-stopped' });
+			break;
+		}
+
 
         /* you may add more cases as needed */
 
