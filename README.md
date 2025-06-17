@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/ota-tech-ai-web-agent-protocol-badge.png)](https://mseep.ai/app/ota-tech-ai-web-agent-protocol)
+
 <!-- markdownlint-disable first-line-h1 -->
 <!-- markdownlint-disable html -->
 <!-- markdownlint-disable no-duplicate-header -->
