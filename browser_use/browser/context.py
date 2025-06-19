@@ -684,31 +684,41 @@ class BrowserContext:
 		Waits for either network to be idle or minimum WAIT_TIME, whichever is longer.
 		Also checks if the loaded URL is allowed.
 		"""
-		# Start timing
-		start_time = time.time()
+		# 1) Begin timing
+		t0 = time.perf_counter()
 
-		# Wait for page load
+		# 2) Wait for stable network
+		t1 = time.perf_counter()
 		try:
 			await self._wait_for_stable_network()
+		except Exception as e:
+			# still time it even if it errors
+			pass
+		t2 = time.perf_counter()
+		print(f"[LOAD] _wait_for_stable_network: {t2 - t1:.3f}s")
 
-			# Check if the loaded URL is allowed
+		# 3) Navigation check
+		t3 = time.perf_counter()
+		try:
 			page = await self.get_current_page()
 			await self._check_and_handle_navigation(page)
-		except URLNotAllowedError as e:
-			raise e
 		except Exception:
-			logger.warning('⚠️  Page load failed, continuing...')
+			# swallow navigation errors
 			pass
+		t4 = time.perf_counter()
+		print(f"[LOAD] _check_and_handle_navigation: {t4 - t3:.3f}s")
 
-		# Calculate remaining time to meet minimum WAIT_TIME
-		elapsed = time.time() - start_time
-		remaining = max((timeout_overwrite or self.config.minimum_wait_page_load_time) - elapsed, 0)
+		# 4) Enforce minimum wait time
+		elapsed = t4 - t0
+		minimum = timeout_overwrite or self.config.minimum_wait_page_load_time
+		remaining = max(minimum - elapsed, 0)
+		print(f"[LOAD] elapsed before sleep: {elapsed:.3f}s, remaining sleep: {remaining:.3f}s")
 
-		logger.debug(f'--Page loaded in {elapsed:.2f} seconds, waiting for additional {remaining:.2f} seconds')
-
-		# Sleep remaining time if needed
 		if remaining > 0:
+			t5 = time.perf_counter()
 			await asyncio.sleep(remaining)
+			t6 = time.perf_counter()
+			print(f"[LOAD] asyncio.sleep: {t6 - t5:.3f}s")
 
 	def _is_url_allowed(self, url: str) -> bool:
 		"""Check if a URL is allowed based on the whitelist configuration."""
@@ -877,14 +887,27 @@ class BrowserContext:
 		structure = await page.evaluate(debug_script)
 		return structure
 
-	@time_execution_sync('--get_state')  # This decorator might need to be updated to handle async
 	async def get_state(self) -> BrowserState:
-		"""Get the current state of the browser"""
+		"""Get the current state of the browser, with per-step timers."""
+		# 1) Wait for page & frames to load
+		t0 = time.perf_counter()
 		await self._wait_for_page_and_frames_load()
-		session = await self.get_session()
-		session.cached_state = await self._update_state()
+		t1 = time.perf_counter()
+		print(f"[GET_STATE] _wait_for_page_and_frames_load: {t1 - t0:.3f}s")
 
-		# Save cookies if a file is specified
+		# 2) Retrieve or create session object
+		t0 = time.perf_counter()
+		session = await self.get_session()
+		t1 = time.perf_counter()
+		print(f"[GET_STATE] get_session:               {t1 - t0:.3f}s")
+
+		# 3) Pull down the full state (DOM, screenshot, cookies, etc.)
+		t0 = time.perf_counter()
+		session.cached_state = await self._update_state()
+		t1 = time.perf_counter()
+		print(f"[GET_STATE] _update_state:              {t1 - t0:.3f}s")
+
+		# 4) Fire-and-forget cookie save
 		if self.config.cookies_file:
 			asyncio.create_task(self.save_cookies())
 
