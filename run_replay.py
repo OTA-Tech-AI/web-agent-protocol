@@ -18,6 +18,16 @@ from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from langchain_ollama import ChatOllama
 from pydantic import SecretStr
 
+import time
+from contextlib import contextmanager
+
+@contextmanager
+def timer(label: str):
+    start = time.perf_counter()
+    yield
+    elapsed = time.perf_counter() - start
+    print(f"[TIMER] {label} took {elapsed:.3f}s")
+
 load_dotenv()
 
 class TaskData(TypedDict):
@@ -141,20 +151,23 @@ async def process_single_task(
                     exact_replay_list = replay_list["action_list"]
             else:
                 raise Exception("Error setting WAP replay mode, no mode type: ", replay_mode)
-
-            agent = Agent(
-                task=task_str,
-                llm=client,
-                browser=browser,
-                validate_output=True,
-                generate_gif=False,
-                use_vision=False,
-                subgoal_list=subgoal_list,
-                exact_replay_list=exact_replay_list,
-                replay_mode=replay_mode
-            )
-            history = await agent.run(max_steps=20)
-            history.save_to_file(task_dir / "history.json")
+            
+            with timer("    agent init"):
+                agent = Agent(
+                    task=task_str,
+                    llm=client,
+                    browser=browser,
+                    validate_output=True,
+                    generate_gif=False,
+                    use_vision=False,
+                    subgoal_list=subgoal_list,
+                    exact_replay_list=exact_replay_list,
+                    replay_mode=replay_mode
+                )
+            with timer("    agent.run"):
+                history = await agent.run(max_steps=20)
+            with timer("    history.save"):
+                history.save_to_file(task_dir / "history.json")
 
     except Exception as e:
         logging.error(f"Error processing task {replay_list['task_id']}: {str(e)}")
@@ -164,75 +177,78 @@ async def process_single_task(
         await browser.close()
 
 
-async def main(max_concurrent_tasks: int,
-               model_provider: str,
-               wap_replay_list_path: str = None) -> None:
+async def main(
+    max_concurrent_tasks: int,
+    model_provider: str,
+    wap_replay_list_path: str = None
+) -> None:
     try:
-        # Setup
+        # ─── Cleanup and concurrency control ──────────────────────────────────
         cleanup_webdriver_cache()
         semaphore = Semaphore(max_concurrent_tasks)
 
-        # Load tasks
-        replay_list = []
-        with open(wap_replay_list_path, "r", encoding="utf-8") as f:
-            replay_list.append(json.load(f))
+        # ─── Load the replay list ─────────────────────────────────────────────
+        with timer("WAP list load"):
+            replay_list = []
+            with open(wap_replay_list_path, "r", encoding="utf-8") as f:
+                replay_list.append(json.load(f))
 
-        # Initialize
+        # Prepare results directory
         results_dir = Path("results")
         results_dir.mkdir(parents=True, exist_ok=True)
 
-        # Process tasks concurrently with semaphore
+        # ─── Per‐task processor ───────────────────────────────────────────────
         async def process_with_semaphore(
-            replay_list: Dict,
+            replay_item: dict,
             client: AzureChatOpenAI | ChatAnthropic | ChatOpenAI,
         ) -> None:
             async with semaphore:
-                print(f"\n=== Now at task {replay_list['task_id']} ===")
+                with timer(f"Task {replay_item['task_id']} total"):
+                    print(f"\n=== Now at task {replay_item['task_id']} ===")
 
-                # Create browser instance inside the semaphore block
-                browser = Browser(
-                    config=BrowserConfig(
-                        # headless=True,
-                        headless=False,
-                        disable_security=True,
-                        new_context_config=BrowserContextConfig(
-                            disable_security=True,
-                            wait_for_network_idle_page_load_time=5,
-                            maximum_wait_page_load_time=20,
-                            # no_viewport=True,
-                            browser_window_size={
-                                "width": 1280,
-                                "height": 1100,
-                            },
-                        ),
-                    )
-                )
-                await process_single_task(
-                    replay_list,
-                    client,
-                    results_dir,
-                    browser
-                )
-                # Add this to ensure browser is always closed
-                try:
-                    await browser.close()
-                except Exception as e:
-                    logging.error(f"Error closing browser: {e}")
+                    # 1) Browser startup
+                    with timer("  browser startup"):
+                        browser = Browser(
+                            config=BrowserConfig(
+                                headless=False,
+                                disable_security=True,
+                                new_context_config=BrowserContextConfig(
+                                    disable_security=True,
+                                    wait_for_network_idle_page_load_time=5,
+                                    maximum_wait_page_load_time=20,
+                                    browser_window_size={"width": 1280, "height": 1100},
+                                ),
+                            )
+                        )
 
-        # Create and run all tasks
+                    # 2) The actual work
+                    with timer("  process_single_task"):
+                        await process_single_task(
+                            replay_item,
+                            client,
+                            results_dir,
+                            browser
+                        )
+
+                    # 3) Browser teardown
+                    with timer("  browser.close"):
+                        try:
+                            await browser.close()
+                        except Exception as e:
+                            logging.error(f"Error closing browser: {e}")
+
+        # ─── Spawn and run tasks ──────────────────────────────────────────────
         all_tasks = []
-        for i, task in enumerate(replay_list):
-            model = next(get_llm_model_generator(model_provider))
-            all_tasks.append(process_with_semaphore(task, model))
+        for task in replay_list:
+            client = next(get_llm_model_generator(model_provider))
+            all_tasks.append(process_with_semaphore(task, client))
 
-        # Add timeout and better error handling
         await asyncio.gather(*all_tasks, return_exceptions=True)
     except Exception as e:
         traceback.print_exc()
         logging.error(f"Main loop error: {e}")
     finally:
-        # Cleanup code here
-        logging.info("Shutting down...")
+        logging.info("Shutting down…")
 
 
 if __name__ == "__main__":
