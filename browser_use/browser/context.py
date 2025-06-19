@@ -510,173 +510,29 @@ class BrowserContext:
 		return context
 
 	async def _wait_for_stable_network(self):
+		"""
+		Wait until the page has loaded and become network-idle.
+		First waits (up to maximum_wait_page_load_time) for 'load',
+		then waits (up to wait_for_network_idle_page_load_time) for 'networkidle'.
+		"""
 		page = await self.get_current_page()
+		load_timeout_ms = int(self.config.maximum_wait_page_load_time * 1000)
+		idle_timeout_ms = int(self.config.wait_for_network_idle_page_load_time * 1000)
 
-		pending_requests = set()
-		last_activity = asyncio.get_event_loop().time()
-
-		# Define relevant resource types and content types
-		RELEVANT_RESOURCE_TYPES = {
-			'document',
-			'stylesheet',
-			'image',
-			'font',
-			'script',
-			'iframe',
-		}
-
-		RELEVANT_CONTENT_TYPES = {
-			'text/html',
-			'text/css',
-			'application/javascript',
-			'image/',
-			'font/',
-			'application/json',
-		}
-
-		# Additional patterns to filter out
-		IGNORED_URL_PATTERNS = {
-			# Analytics and tracking
-			'analytics',
-			'tracking',
-			'telemetry',
-			'beacon',
-			'metrics',
-			# Ad-related
-			'doubleclick',
-			'adsystem',
-			'adserver',
-			'advertising',
-			# Social media widgets
-			'facebook.com/plugins',
-			'platform.twitter',
-			'linkedin.com/embed',
-			# Live chat and support
-			'livechat',
-			'zendesk',
-			'intercom',
-			'crisp.chat',
-			'hotjar',
-			# Push notifications
-			'push-notifications',
-			'onesignal',
-			'pushwoosh',
-			# Background sync/heartbeat
-			'heartbeat',
-			'ping',
-			'alive',
-			# WebRTC and streaming
-			'webrtc',
-			'rtmp://',
-			'wss://',
-			# Common CDNs for dynamic content
-			'cloudfront.net',
-			'fastly.net',
-		}
-
-		async def on_request(request):
-			# Filter by resource type
-			if request.resource_type not in RELEVANT_RESOURCE_TYPES:
-				return
-
-			# Filter out streaming, websocket, and other real-time requests
-			if request.resource_type in {
-				'websocket',
-				'media',
-				'eventsource',
-				'manifest',
-				'other',
-			}:
-				return
-
-			# Filter out by URL patterns
-			url = request.url.lower()
-			if any(pattern in url for pattern in IGNORED_URL_PATTERNS):
-				return
-
-			# Filter out data URLs and blob URLs
-			if url.startswith(('data:', 'blob:')):
-				return
-
-			# Filter out requests with certain headers
-			headers = request.headers
-			if headers.get('purpose') == 'prefetch' or headers.get('sec-fetch-dest') in [
-				'video',
-				'audio',
-			]:
-				return
-
-			nonlocal last_activity
-			pending_requests.add(request)
-			last_activity = asyncio.get_event_loop().time()
-			# logger.debug(f'Request started: {request.url} ({request.resource_type})')
-
-		async def on_response(response):
-			request = response.request
-			if request not in pending_requests:
-				return
-
-			# Filter by content type if available
-			content_type = response.headers.get('content-type', '').lower()
-
-			# Skip if content type indicates streaming or real-time data
-			if any(
-				t in content_type
-				for t in [
-					'streaming',
-					'video',
-					'audio',
-					'webm',
-					'mp4',
-					'event-stream',
-					'websocket',
-					'protobuf',
-				]
-			):
-				pending_requests.remove(request)
-				return
-
-			# Only process relevant content types
-			if not any(ct in content_type for ct in RELEVANT_CONTENT_TYPES):
-				pending_requests.remove(request)
-				return
-
-			# Skip if response is too large (likely not essential for page load)
-			content_length = response.headers.get('content-length')
-			if content_length and int(content_length) > 5 * 1024 * 1024:  # 5MB
-				pending_requests.remove(request)
-				return
-
-			nonlocal last_activity
-			pending_requests.remove(request)
-			last_activity = asyncio.get_event_loop().time()
-			# logger.debug(f'Request resolved: {request.url} ({content_type})')
-
-		# Attach event listeners
-		page.on('request', on_request)
-		page.on('response', on_response)
+		# logger.info(f"Network idle timeout = {self.config.wait_for_network_idle_page_load_time}s, "
+		# 	           f"max wait = {self.config.maximum_wait_page_load_time}s")
 
 		try:
-			# Wait for idle time
-			start_time = asyncio.get_event_loop().time()
-			while True:
-				await asyncio.sleep(0.1)
-				now = asyncio.get_event_loop().time()
-				if len(pending_requests) == 0 and (now - last_activity) >= self.config.wait_for_network_idle_page_load_time:
-					break
-				if now - start_time > self.config.maximum_wait_page_load_time:
-					logger.debug(
-						f'Network timeout after {self.config.maximum_wait_page_load_time}s with {len(pending_requests)} '
-						f'pending requests: {[r.url for r in pending_requests]}'
-					)
-					break
-
-		finally:
-			# Clean up event listeners
-			page.remove_listener('request', on_request)
-			page.remove_listener('response', on_response)
-
-		logger.debug(f'⚖️  Network stabilized for {self.config.wait_for_network_idle_page_load_time} seconds')
+			# 1) wait for the initial load to finish
+			await page.wait_for_load_state('load', timeout=load_timeout_ms)
+			# 2) then wait until no network activity for the idle window
+			await page.wait_for_load_state('networkidle', timeout=idle_timeout_ms)
+		except TimeoutError:
+			logger.debug(
+				f'⏱️  Timed out waiting for load/networkidle '
+				f'(load ≤ {self.config.maximum_wait_page_load_time}s, '
+				f'idle ≤ {self.config.wait_for_network_idle_page_load_time}s)'
+			)
 
 	async def _wait_for_page_and_frames_load(self, timeout_overwrite: float | None = None):
 		"""
